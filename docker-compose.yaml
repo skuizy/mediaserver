@@ -293,7 +293,7 @@ services:
         - backend      
     restart: always
     depends_on:
-      - nextcloud
+      - mync
       - jackett
       - sonarr
       - radarr
