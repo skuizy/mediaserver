@@ -67,6 +67,13 @@ créer l'arborescence suivante dans /media :
         └── [drwxrwxr-x sonarr   www-data]  tv
 ```
 
+mettre à jour les vairables `PIHOLE_WEBPASSWORD`, `DB_ROOT_PASSWORD`, `MY_DDNS_DOMAIN`, `NC_ADMIN_USER` et `NC_ADMIN_PASSWORD` dans le fichier `.env`
+
+configurer la mise à jour dynamique du nom de domaine : `docker run -it --rm -v $(pwd)/noip:/usr/local/etc mqll/noip:2.1.9`
+```
+COMPOSE_HTTP_TIMEOUT=600 docker-compose up --build -d
+```
+
 configuration DNS local :
 https://github.com/pi-hole/docker-pi-hole#installing-on-ubuntu
 ```
@@ -77,12 +84,6 @@ $ sudo sh -c 'rm /etc/resolv.conf && ln -s /run/systemd/resolve/resolv.conf /etc
 $ sudo systemctl restart systemd-resolved
 ```
 
-mettre à jour les vairables `PIHOLE_WEBPASSWORD`, `DB_ROOT_PASSWORD`, `MY_DDNS_DOMAIN`, `NC_ADMIN_USER` et `NC_ADMIN_PASSWORD` dans le fichier `.env`
-
-configurer la mise à jour dynamique du nom de domaine : `docker run -it --rm -v $(pwd)/noip:/usr/local/etc mqll/noip`
-```
-COMPOSE_HTTP_TIMEOUT=600 docker-compose up --build -d
-```
 post installation :
 ajout des applications News, Talk, External storage support, INotify file watcher dans nextcloud.
 monter le répertoire /data en stockage externe dans nextcloud
