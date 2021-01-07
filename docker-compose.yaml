@@ -36,7 +36,7 @@ services:
       - unbound
   noip:
     container_name: noip
-    image: mqll/noip:2.1.9-arm64
+    image: mqll/noip:2.1.9
     volumes:
       - ./noip:/usr/local/etc
     restart: always
@@ -106,6 +106,47 @@ services:
       - mariadb
     networks:
       - backend
+  netdata:
+    image: netdata/netdata
+    container_name: netdata
+    environment:
+      - PGID=998
+#    hostname: example.com # set to fqdn of host
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
+    networks:
+      - backend
+    depends_on:
+      - pihole
+  portainer:
+    image: portainer/portainer-ce
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    container_name: portainer
+    volumes:
+      - ./portainer:/data
+    networks:
+      - backend
+    depends_on:
+      - pihole
+    restart: always
+  portainer_agent:
+    image: portainer/agent
+    container_name: portainer_agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - backend
+    depends_on:
+      - pihole
+    restart: always
   wireguard:
     image: linuxserver/wireguard
     container_name: wireguard
@@ -278,6 +319,10 @@ services:
         - REVERSE_PROXY_HOST_8=http://mync/
         - REVERSE_PROXY_URL_9=/qbittorrent/
         - REVERSE_PROXY_HOST_9=http://qbittorrent:8080/
+        - REVERSE_PROXY_URL_10=/netdata/
+        - REVERSE_PROXY_HOST_10=http://netdata:19999/
+        - REVERSE_PROXY_URL_11=/portainer/
+        - REVERSE_PROXY_HOST_11=http://portainer:9000/
         - ALLOWED_METHODS=GET|POST|HEAD|PROPFIND|DELETE|PUT|MKCOL|MOVE|COPY|PROPPATCH|REPORT
         - USE_BROTLI=yes
         - USE_GZIP=yes
@@ -303,6 +348,8 @@ services:
       - qbittorrent
       - pihole
       - wireguard
+      - netdata
+      - portainer
 
 networks:
     frontend:
