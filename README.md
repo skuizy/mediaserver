@@ -40,9 +40,9 @@ $ exit
 
 récupération projet docker-compose :
 ```
-git clone xxxx
+git clone https://github.com/skuizy/mediaserver.git
 
-cd xxxx
+cd mediaserver
 ```
 
 préparation de l'environement :
