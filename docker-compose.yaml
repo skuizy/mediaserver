@@ -81,10 +81,10 @@ services:
       - backend
     depends_on:
       - pihole
-  nextcloud:
+  mync:
 #    image: "nextcloud"
     build: nextcloud_dockerfile
-    container_name: nextcloud
+    container_name: mync
     env_file: .env
     environment:
         - APACHE_DISABLE_REWRITE_IP=1
@@ -275,7 +275,7 @@ services:
         - REVERSE_PROXY_URL_7=/pihole/
         - REVERSE_PROXY_HOST_7=http://pihole/
         - REVERSE_PROXY_URL_8=/nextcloud/
-        - REVERSE_PROXY_HOST_8=http://nextcloud/
+        - REVERSE_PROXY_HOST_8=http://mync/
         - REVERSE_PROXY_URL_9=/qbittorrent/
         - REVERSE_PROXY_HOST_9=http://qbittorrent:8080/
         - ALLOWED_METHODS=GET|POST|HEAD|PROPFIND|DELETE|PUT|MKCOL|MOVE|COPY|PROPPATCH|REPORT
