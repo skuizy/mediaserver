@@ -3,7 +3,9 @@ FROM nextcloud:apache
 RUN apt-get update && apt-get install -y \
     supervisor \
   && rm -rf /var/lib/apt/lists/* \
-  && mkdir /var/log/supervisord /var/run/supervisord
+  && mkdir /var/log/supervisord /var/run/supervisord \
+  && pecl install inotify \
+  && docker-php-ext-enable inotify
 
 COPY supervisord.conf /
 
