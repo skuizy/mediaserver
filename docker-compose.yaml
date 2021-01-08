@@ -127,7 +127,7 @@ services:
       - pihole
   portainer:
     image: portainer/portainer-ce
-    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    command: -H tcp://portainer_agent:9001 --tlsskipverify
     container_name: portainer
     volumes:
       - ./portainer:/data
