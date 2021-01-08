@@ -81,10 +81,10 @@ services:
       - backend
     depends_on:
       - pihole
-  mync:
+  nextcloud:
 #    image: "nextcloud"
     build: nextcloud_dockerfile
-    container_name: mync
+    container_name: nextcloud
     env_file: .env
     environment:
         - APACHE_DISABLE_REWRITE_IP=1
@@ -316,7 +316,7 @@ services:
         - REVERSE_PROXY_URL_7=/pihole/
         - REVERSE_PROXY_HOST_7=http://pihole/
         - REVERSE_PROXY_URL_8=/nextcloud/
-        - REVERSE_PROXY_HOST_8=http://mync/
+        - REVERSE_PROXY_HOST_8=http://nextcloud/
         - REVERSE_PROXY_URL_9=/qbittorrent/
         - REVERSE_PROXY_HOST_9=http://qbittorrent:8080/
         - REVERSE_PROXY_URL_10=/netdata/
@@ -330,6 +330,7 @@ services:
         - REFERRER_POLICY=same-origin
         - PROXY_REAL_IP=yes
         - FAIL2BAN_STATUS_CODE=400|401|403|405|444
+        - USE_CLAMAV_SCAN=no
     ports:
         - "80:8080"
         - "443:8443"
@@ -338,7 +339,7 @@ services:
         - backend      
     restart: always
     depends_on:
-      - mync
+      - nextcloud
       - jackett
       - sonarr
       - radarr
