@@ -213,7 +213,7 @@ services:
     image: "hotio/sonarr:nightly"
     container_name: sonarr
     volumes:
-        - ./sonarr/config:/config
+        - ./sonarr/config:/config/app
         - /media/DATA:/data
     env_file: .env
     environment:
@@ -232,7 +232,7 @@ services:
     image: "hotio/radarr:nightly"
     container_name: radarr
     volumes:
-        - ./radarr/config:/config
+        - ./radarr/config:/config/app
         - /media/DATA:/data
     env_file: .env
     environment:
@@ -251,7 +251,7 @@ services:
     image: "hotio/lidarr:nightly"
     container_name: lidarr
     volumes:
-        - ./lidarr/config:/config
+        - ./lidarr/config:/config/app
         - /media/DATA:/data
     env_file: .env
     environment:
@@ -270,7 +270,7 @@ services:
     image: "hotio/readarr:nightly"
     container_name: readarr
     volumes:
-        - ./readarr/config:/config
+        - ./readarr/config:/config/app
         - /media/DATA:/data
     env_file: .env
     environment:
