@@ -34,6 +34,9 @@ services:
       - CAP_NET_BIND_SERVICE
     depends_on:
       - unbound
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/pihole/"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://pihole/"
   noip:
     container_name: noip
     image: mqll/noip:2.1.9
@@ -54,19 +57,15 @@ services:
     ports:
       - "8096:8096"
     devices:
-      - "/dev/video10:/dev/video10"
-      - "/dev/video10:/dev/video11"
-      - "/dev/video10:/dev/video20"
-      - "/dev/video10:/dev/video21"
-      - "/dev/video10:/dev/video22"
-      - "/dev/video10:/dev/video23"
-      - "/dev/video10:/dev/video30"
-      - "/dev/video10:/dev/video31"
+      - "/dev/dri:/dev/dri"
     networks:
       - backend
     depends_on:
       - pihole
     restart: always
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/jellyfin/"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://jellyfin:8096/"
   mariadb:
     image: mariadb
     container_name: mariadb
@@ -90,8 +89,8 @@ services:
         - APACHE_DISABLE_REWRITE_IP=1
         - OVERWRITEWEBROOT=/nextcloud
         - TRUSTED_PROXIES=bunkerized-nginx
-#        - NEXTCLOUD_TRUSTED_DOMAINS=${MY_DDNS_DOMAIN}
-        - NEXTCLOUD_TRUSTED_DOMAINS=192.168.0.127
+        - NEXTCLOUD_TRUSTED_DOMAINS=${MY_DDNS_DOMAIN}
+#        - NEXTCLOUD_TRUSTED_DOMAINS=192.168.0.127
         - NEXTCLOUD_DATA_DIR=/var/www/html/data
         - NEXTCLOUD_ADMIN_USER=${NC_ADMIN_USER}
         - NEXTCLOUD_ADMIN_PASSWORD=${NC_ADMIN_PASSWORD}
@@ -106,12 +105,48 @@ services:
       - mariadb
     networks:
       - backend
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/nextcloud/"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://nextcloud/"
+  dockerproxy :
+    privileged: true
+    image: tecnativa/docker-socket-proxy
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+     - CONTAINERS=1
+     - AUTH=1
+     - SECRETS=1
+     - POST=1
+     - BUILD=1
+     - COMMIT=1
+     - CONFIGS=1
+     - CONTAINERS=1
+     - DISTRIBUTION=1
+     - EXEC=1
+     - GRPC=1
+     - IMAGES=1
+     - INFO=1
+     - NETWORKS=1
+     - NODES=1
+     - PLUGINS=1
+     - SERVICES=1
+     - SESSION=1
+     - SWARM=1
+     - SYSTEM=1
+     - TASKS=1
+     - VOLUMES=1
+    networks:
+      - docker_proxy
+    depends_on:
+      - pihole
   netdata:
     image: netdata/netdata
     container_name: netdata
     environment:
       - PGID=998
-#    hostname: example.com # set to fqdn of host
+      - DISABLE_TELEMETRY=1
+      - DOCKER_HOST=dockerproxy:2375
     cap_add:
       - SYS_PTRACE
     security_opt:
@@ -119,34 +154,34 @@ services:
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./netdata/config:/etc/netdata
+      - ./netdata/lib:/var/lib/netdata
+      - ./netdata/cache:/var/cache/netdata
+      - /etc/os-release:/host/etc/os-release:ro
     restart: always
     networks:
       - backend
+      - docker_proxy
     depends_on:
       - pihole
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/netdata/"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://netdata:19999/"
   portainer:
     image: portainer/portainer-ce
-    command: -H tcp://portainer_agent:9001 --tlsskipverify
+    command: -H tcp://dockerproxy:2375 --tlsskipverify
     container_name: portainer
     volumes:
       - ./portainer:/data
     networks:
       - backend
+      - docker_proxy
     depends_on:
       - pihole
     restart: always
-  portainer_agent:
-    image: portainer/agent
-    container_name: portainer_agent
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/volumes:/var/lib/docker/volumes
-    networks:
-      - backend
-    depends_on:
-      - pihole
-    restart: always
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/portainer/"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://portainer:9000/"
   wireguard:
     image: linuxserver/wireguard
     container_name: wireguard
@@ -171,6 +206,7 @@ services:
           - jackett
           - qbittorrent
           - flaresolverr
+          - prowlarr
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
@@ -181,7 +217,7 @@ services:
       - pihole
       - wireguard
   qbittorrent:
-    image: linuxserver/qbittorrent
+      image: linuxserver/qbittorrent
     container_name: qbittorrent
     env_file: .env
     environment:
@@ -196,6 +232,9 @@ services:
       - pihole
       - wireguard 
     restart: always
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/qbittorrent"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://qbittorrent:8080"
   jackett:
     image: ghcr.io/linuxserver/jackett
     container_name: jackett
@@ -209,36 +248,35 @@ services:
       - pihole
       - flaresolverr
       - wireguard
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/jackett/"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://jackett:9117/"
   prowlarr:
-    image: "hotio/prowlarr:nightly"
+    image: hotio/prowlarr:nightly
     container_name: prowlarr
     volumes:
-        - ./prowlarr/config:/config/app
+        - ./prowlarr/config:/config
         - /media/DATA:/data
     env_file: .env
-    environment:
-      - PUID=1005
-      - PGID=33
-    expose:
-      - "9696"
     network_mode: "service:wireguard"
     restart: always
     depends_on:
       - pihole
       - flaresolverr
       - wireguard
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/prowlarr"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://prowlarr:9696"
   sonarr:
     image: "hotio/sonarr:nightly"
     container_name: sonarr
     volumes:
-        - ./sonarr/config:/config/app
+        - ./sonarr/config:/config
         - /media/DATA:/data
     env_file: .env
     environment:
       - PUID=1001
       - PGID=33
-    expose:
-      - "8989"
     networks:
       - backend
     restart: always
@@ -247,18 +285,19 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/sonarr"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://sonarr:8989"
   radarr:
     image: "hotio/radarr:nightly"
     container_name: radarr
     volumes:
-        - ./radarr/config:/config/app
+        - ./radarr/config:/config
         - /media/DATA:/data
     env_file: .env
     environment:
       - PUID=1002
       - PGID=33
-    expose:
-      - "7878"
     networks:
       - backend
     restart: always
@@ -267,18 +306,19 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/radarr"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://radarr:7878"
   lidarr:
     image: "hotio/lidarr:nightly"
     container_name: lidarr
     volumes:
-        - ./lidarr/config:/config/app
+        - ./lidarr/config:/config
         - /media/DATA:/data
     env_file: .env
     environment:
       - PUID=1003
       - PGID=33
-    expose:
-      - "8686"
     networks:
       - backend
     restart: always
@@ -287,18 +327,19 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/lidarr"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://lidarr:8686"
   readarr:
     image: "hotio/readarr:nightly"
     container_name: readarr
     volumes:
-        - ./readarr/config:/config/app
+        - ./readarr/config:/config
         - /media/DATA:/data
     env_file: .env
     environment:
       - PUID=1004
       - PGID=33
-    expose:
-      - "8787"
     networks:
       - backend
     restart: always
@@ -307,9 +348,19 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
+    labels:
+      - "bunkerized-nginx.REVERSE_PROXY_URL=/readarr"
+      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://readarr:8787"
   bunkerized-nginx:
     image: "bunkerity/bunkerized-nginx"
     container_name: bunkerized-nginx
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges
+    read_only: true
+    tmpfs:
+      - /tmp
     volumes:
         - ./nginx/certificates:/etc/letsencrypt
         - ./server-confs:/server-confs:ro         
@@ -323,30 +374,6 @@ services:
         - MAX_CLIENT_SIZE=0
         - USE_REVERSE_PROXY=yes
         - SERVE_FILES=no
-        - REVERSE_PROXY_URL_1=/jackett/
-        - REVERSE_PROXY_HOST_1=http://jackett:9117/
-        - REVERSE_PROXY_URL_2=/sonarr
-        - REVERSE_PROXY_HOST_2=http://sonarr:8989
-        - REVERSE_PROXY_URL_3=/radarr
-        - REVERSE_PROXY_HOST_3=http://radarr:7878
-        - REVERSE_PROXY_URL_4=/lidarr
-        - REVERSE_PROXY_HOST_4=http://lidarr:8686
-        - REVERSE_PROXY_URL_5=/readarr
-        - REVERSE_PROXY_HOST_5=http://readarr:8787
-        - REVERSE_PROXY_URL_6=/jellyfin/
-        - REVERSE_PROXY_HOST_6=http://jellyfin:8096/
-        - REVERSE_PROXY_URL_7=/pihole/
-        - REVERSE_PROXY_HOST_7=http://pihole/
-        - REVERSE_PROXY_URL_8=/nextcloud/
-        - REVERSE_PROXY_HOST_8=http://nextcloud/
-        - REVERSE_PROXY_URL_9=/qbittorrent/
-        - REVERSE_PROXY_HOST_9=http://qbittorrent:8080/
-        - REVERSE_PROXY_URL_10=/netdata/
-        - REVERSE_PROXY_HOST_10=http://netdata:19999/
-        - REVERSE_PROXY_URL_11=/portainer/
-        - REVERSE_PROXY_HOST_11=http://portainer:9000/
-        - REVERSE_PROXY_URL_12=/prowlarr
-        - REVERSE_PROXY_HOST_12=http://prowlarr:9696
         - ALLOWED_METHODS=GET|POST|HEAD|PROPFIND|DELETE|PUT|MKCOL|MOVE|COPY|PROPPATCH|REPORT
         - USE_BROTLI=yes
         - USE_GZIP=yes
@@ -355,6 +382,8 @@ services:
         - PROXY_REAL_IP=yes
         - FAIL2BAN_STATUS_CODE=400|401|403|405|444
         - USE_CLAMAV_SCAN=no
+    labels:
+      - "bunkerized-nginx.AUTOCONF"
     ports:
         - "80:8080"
         - "443:8443"
@@ -376,8 +405,19 @@ services:
       - wireguard
       - netdata
       - portainer
+  myautoconf:
+    image: bunkerity/bunkerized-nginx-autoconf
+    restart: always
+    volumes_from:
+      - bunkerized-nginx
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - bunkerized-nginx
 
 networks:
     frontend:
     backend:
+      external: false
+    docker_proxy:
       external: false
