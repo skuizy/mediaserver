@@ -233,7 +233,7 @@ services:
       - pihole
       - wireguard
   qbittorrent:
-      image: linuxserver/qbittorrent
+    image: linuxserver/qbittorrent
     container_name: qbittorrent
     env_file: .env
     environment:
