@@ -70,20 +70,20 @@ services:
     labels:
       - "bunkerized-nginx.REVERSE_PROXY_URL=/jellyfin/"
       - "bunkerized-nginx.REVERSE_PROXY_HOST=http://jellyfin:8096/"
-  mariadb:
-    image: mariadb
-    container_name: mariadb
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    restart: always
-    volumes:
-        - ./mariadb:/var/lib/mysql
-    env_file: .env
-    environment:
-        - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-    networks:
-      - backend
-    depends_on:
-      - pihole
+#  mariadb:
+#    image: mariadb
+#    container_name: mariadb
+#    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+#    restart: always
+#    volumes:
+#        - ./mariadb:/var/lib/mysql
+#    env_file: .env
+#    environment:
+#        - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+#    networks:
+#      - backend
+#    depends_on:
+#      - pihole
   nextcloud:
 #    image: "nextcloud"
     build: nextcloud_dockerfile
@@ -98,7 +98,7 @@ services:
         - NEXTCLOUD_DATA_DIR=/var/www/html/data
         - NEXTCLOUD_ADMIN_USER=${NC_ADMIN_USER}
         - NEXTCLOUD_ADMIN_PASSWORD=${NC_ADMIN_PASSWORD}
-        - MYSQL_HOST=mariadb
+        - POSTGRES_HOST=postgres
     volumes:
         - ./nextcloud/html:/var/www/html
         - ./nextcloud/config:/var/www/html/config
