@@ -209,6 +209,24 @@ services:
       - pihole
       - flaresolverr
       - wireguard
+  prowlarr:
+    image: "hotio/prowlarr:nightly"
+    container_name: prowlarr
+    volumes:
+        - ./prowlarr/config:/config/app
+        - /media/DATA:/data
+    env_file: .env
+    environment:
+      - PUID=1005
+      - PGID=33
+    expose:
+      - "9696"
+    network_mode: "service:wireguard"
+    restart: always
+    depends_on:
+      - pihole
+      - flaresolverr
+      - wireguard
   sonarr:
     image: "hotio/sonarr:nightly"
     container_name: sonarr
@@ -227,6 +245,7 @@ services:
     depends_on:
       - pihole
       - jackett
+      - prowlarr
       - qbittorrent
   radarr:
     image: "hotio/radarr:nightly"
@@ -246,6 +265,7 @@ services:
     depends_on:
       - pihole
       - jackett
+      - prowlarr
       - qbittorrent
   lidarr:
     image: "hotio/lidarr:nightly"
@@ -265,6 +285,7 @@ services:
     depends_on:
       - pihole
       - jackett
+      - prowlarr
       - qbittorrent
   readarr:
     image: "hotio/readarr:nightly"
@@ -284,6 +305,7 @@ services:
     depends_on:
       - pihole
       - jackett
+      - prowlarr
       - qbittorrent
   bunkerized-nginx:
     image: "bunkerity/bunkerized-nginx"
@@ -341,6 +363,7 @@ services:
     depends_on:
       - nextcloud
       - jackett
+      - prowlarr
       - sonarr
       - radarr
       - lidarr
