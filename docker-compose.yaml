@@ -317,9 +317,9 @@ services:
         - ./modsec-confs:/modsec-confs:ro         
     env_file: .env
     environment:
-#        - SERVER_NAME=${MY_DDNS_DOMAIN}
-#        - AUTO_LETS_ENCRYPT=yes
-#        - REDIRECT_HTTP_TO_HTTPS=yes
+        - SERVER_NAME=${MY_DDNS_DOMAIN}
+        - AUTO_LETS_ENCRYPT=yes
+        - REDIRECT_HTTP_TO_HTTPS=yes
         - MAX_CLIENT_SIZE=0
         - USE_REVERSE_PROXY=yes
         - SERVE_FILES=no
@@ -345,6 +345,8 @@ services:
         - REVERSE_PROXY_HOST_10=http://netdata:19999/
         - REVERSE_PROXY_URL_11=/portainer/
         - REVERSE_PROXY_HOST_11=http://portainer:9000/
+        - REVERSE_PROXY_URL_12=/prowlarr
+        - REVERSE_PROXY_HOST_12=http://prowlarr:9696
         - ALLOWED_METHODS=GET|POST|HEAD|PROPFIND|DELETE|PUT|MKCOL|MOVE|COPY|PROPPATCH|REPORT
         - USE_BROTLI=yes
         - USE_GZIP=yes
