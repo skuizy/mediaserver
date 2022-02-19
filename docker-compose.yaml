@@ -369,6 +369,7 @@ services:
     env_file: .env
     environment:
         - SERVER_NAME=${MY_DDNS_DOMAIN}
+        - DISABLE_DEFAULT_SERVER=yes
         - AUTO_LETS_ENCRYPT=yes
         - REDIRECT_HTTP_TO_HTTPS=yes
         - MAX_CLIENT_SIZE=0
