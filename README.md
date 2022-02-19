@@ -59,12 +59,34 @@ créer l'arborescence suivante dans /media :
 ```
 /media
 └── [drwxrwxr-x $USER   www-data]  DATA
-    ├── [drwxrwxr-x $USER   www-data]  download
-    └── [drwxrwxr-x $USER   www-data]  media
-        ├── [drwxrwxr-x readarr  www-data]  book
-        ├── [drwxrwxr-x radarr   www-data]  movie
-        ├── [drwxrwxr-x lidarr   www-data]  music
-        └── [drwxrwxr-x sonarr   www-data]  tv
+    ├── [drwxrwxr-x $USER   www-data]  1
+        ├── [drwxrwxr-x $USER   www-data]  download
+        └── [drwxrwxr-x $USER   www-data]  media
+            ├── [drwxrwxr-x readarr  www-data]  book
+            ├── [drwxrwxr-x radarr   www-data]  movie
+            ├── [drwxrwxr-x lidarr   www-data]  music
+            └── [drwxrwxr-x sonarr   www-data]  tv
+    ├── [drwxrwxr-x $USER   www-data]  2
+        ├── [drwxrwxr-x $USER   www-data]  download
+        └── [drwxrwxr-x $USER   www-data]  media
+            ├── [drwxrwxr-x readarr  www-data]  book
+            ├── [drwxrwxr-x radarr   www-data]  movie
+            ├── [drwxrwxr-x lidarr   www-data]  music
+            └── [drwxrwxr-x sonarr   www-data]  tv
+    ├── [drwxrwxr-x $USER   www-data]  3
+        ├── [drwxrwxr-x $USER   www-data]  download
+        └── [drwxrwxr-x $USER   www-data]  media
+            ├── [drwxrwxr-x readarr  www-data]  book
+            ├── [drwxrwxr-x radarr   www-data]  movie
+            ├── [drwxrwxr-x lidarr   www-data]  music
+            └── [drwxrwxr-x sonarr   www-data]  tv
+    └── [drwxrwxr-x $USER   www-data]  4
+        ├── [drwxrwxr-x $USER   www-data]  download
+        └── [drwxrwxr-x $USER   www-data]  media
+            ├── [drwxrwxr-x readarr  www-data]  book
+            ├── [drwxrwxr-x radarr   www-data]  movie
+            ├── [drwxrwxr-x lidarr   www-data]  music
+            └── [drwxrwxr-x sonarr   www-data]  tv
 ```
 
 mettre à jour les vairables `PIHOLE_WEBPASSWORD`, `MY_DDNS_DOMAIN`, `NC_ADMIN_USER` et `NC_ADMIN_PASSWORD` dans le fichier `.env`
