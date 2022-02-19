@@ -69,6 +69,8 @@ créer l'arborescence suivante dans /media :
 
 mettre à jour les vairables `PIHOLE_WEBPASSWORD`, `MY_DDNS_DOMAIN`, `NC_ADMIN_USER` et `NC_ADMIN_PASSWORD` dans le fichier `.env`
 
+mettre à jour la vairable `POSTGRES_PASSWORD` du conteneur `nextcloud` dans le fichier `docker-compose.yaml`
+
 configurer la mise à jour dynamique du nom de domaine : `docker run -it --rm -v $(pwd)/noip:/usr/local/etc mqll/noip:2.1.9`
 ```
 COMPOSE_HTTP_TIMEOUT=600 docker-compose up --build -d
