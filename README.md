@@ -52,7 +52,7 @@ sudo useradd -M -b /home/$USER/mediaserver -s /sbin/nologin -u 1001 -G www-data 
 sudo useradd -M -b /home/$USER/mediaserver -s /sbin/nologin -u 1002 -G www-data radarr
 sudo useradd -M -b /home/$USER/mediaserver -s /sbin/nologin -u 1003 -G www-data lidarr
 sudo useradd -M -b /home/$USER/mediaserver -s /sbin/nologin -u 1004 -G www-data readarr
-sudo usermod -aG radarr,lidarr,readarr,prowlarr www-data
+sudo usermod -aG radarr,lidarr,readarr www-data
 ```
 
 créer l'arborescence suivante dans /media :
