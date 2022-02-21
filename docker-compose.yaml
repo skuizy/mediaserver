@@ -162,7 +162,7 @@ services:
       - pihole
   portainer:
     image: portainer/portainer-ce
-    command: -H tcp://dockerproxy:2375 --tlsskipverify
+    #command: -H tcp://dockerproxy:2375 --tlsskipverify
     container_name: portainer
     volumes:
       - ./portainer:/data
