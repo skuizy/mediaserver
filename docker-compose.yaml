@@ -84,8 +84,8 @@ services:
     env_file: .env
     environment:
         - APACHE_DISABLE_REWRITE_IP=1
-        - TRUSTED_PROXIES=bunkerized-nginx
-        - NEXTCLOUD_TRUSTED_DOMAINS=${MY_DDNS_DOMAIN}
+        - TRUSTED_PROXIES=swag
+        - NEXTCLOUD_TRUSTED_DOMAINS=https://nextcloud.${MY_DDNS_DOMAIN}
         - NEXTCLOUD_DATA_DIR=/var/www/html/data
         - NEXTCLOUD_ADMIN_USER=${NC_ADMIN_USER}
         - NEXTCLOUD_ADMIN_PASSWORD=${NC_ADMIN_PASSWORD}
@@ -300,7 +300,6 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
-
   readarr:
     image: linuxserver/readarr:nightly
     container_name: readarr
@@ -326,7 +325,6 @@ services:
       - NET_ADMIN
     env_file: .env
     environment:
-
       - URL=
       - SUBDOMAINS=wildcard
       - VALIDATION=duckdns
