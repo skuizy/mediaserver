@@ -38,21 +38,22 @@ services:
       - CAP_NET_RAW
     depends_on:
       - unbound
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/pihole/"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://pihole/"
-  noip:
-    container_name: noip
-    image: mqll/noip:2.1.9
+  duckdns:
+    image: linuxserver/duckdns
+    container_name: duckdns
+    environment:
+      - SUBDOMAINS=
+      - TOKEN=token
+      - LOG_FILE=false
     volumes:
-      - ./noip:/usr/local/etc
+      - ./duckdns/config:/config #optional
     restart: always
     networks:
       - backend
     depends_on:
       - pihole
   jellyfin:
-    image: "hotio/jellyfin:release"
+    image: linuxserver/jellyfin
     container_name: jellyfin
     volumes:
         - ./jellyfin/config:/config
@@ -67,23 +68,6 @@ services:
     depends_on:
       - pihole
     restart: always
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/jellyfin/"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://jellyfin:8096/"
-#  mariadb:
-#    image: mariadb
-#    container_name: mariadb
-#    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-#    restart: always
-#    volumes:
-#        - ./mariadb:/var/lib/mysql
-#    env_file: .env
-#    environment:
-#        - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-#    networks:
-#      - backend
-#    depends_on:
-#      - pihole
   postgres:
     image: postgres:14
     restart: always
@@ -100,10 +84,8 @@ services:
     env_file: .env
     environment:
         - APACHE_DISABLE_REWRITE_IP=1
-        - OVERWRITEWEBROOT=/nextcloud
         - TRUSTED_PROXIES=bunkerized-nginx
         - NEXTCLOUD_TRUSTED_DOMAINS=${MY_DDNS_DOMAIN}
-#        - NEXTCLOUD_TRUSTED_DOMAINS=192.168.0.127
         - NEXTCLOUD_DATA_DIR=/var/www/html/data
         - NEXTCLOUD_ADMIN_USER=${NC_ADMIN_USER}
         - NEXTCLOUD_ADMIN_PASSWORD=${NC_ADMIN_PASSWORD}
@@ -121,9 +103,6 @@ services:
       - postgres
     networks:
       - backend
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/nextcloud/"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://nextcloud/"
   dockerproxy :
     privileged: true
     image: tecnativa/docker-socket-proxy
@@ -179,9 +158,6 @@ services:
       - docker_proxy
     depends_on:
       - pihole
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/netdata/"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://netdata:19999/"
   portainer:
     image: portainer/portainer-ce
     command: -H tcp://dockerproxy:2375 --tlsskipverify
@@ -194,9 +170,6 @@ services:
     depends_on:
       - pihole
     restart: always
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/portainer/"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://portainer:9000/"
   wireguard:
     image: linuxserver/wireguard
     container_name: wireguard
@@ -247,11 +220,8 @@ services:
       - pihole
       - wireguard 
     restart: always
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/qbittorrent"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://qbittorrent:8080"
   jackett:
-    image: ghcr.io/linuxserver/jackett
+    image: linuxserver/jackett:development
     container_name: jackett
     env_file: .env
     volumes:
@@ -263,15 +233,11 @@ services:
       - pihole
       - flaresolverr
       - wireguard
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/jackett/"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://jackett:9117/"
   prowlarr:
-    image: hotio/prowlarr:nightly
+    image: linuxserver/prowlarr:nightly
     container_name: prowlarr
     volumes:
         - ./prowlarr/config:/config
-        - /media/DATA:/data
     env_file: .env
     network_mode: "service:wireguard"
     restart: always
@@ -280,11 +246,8 @@ services:
       - flaresolverr
       - wireguard
       - postgres
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/prowlarr"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://prowlarr:9696"
   sonarr:
-    image: "hotio/sonarr:nightly"
+    image: linuxserver/sonarr:nightly
     container_name: sonarr
     volumes:
         - ./sonarr/config:/config
@@ -301,11 +264,8 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/sonarr"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://sonarr:8989"
   radarr:
-    image: "hotio/radarr:nightly"
+    image: linuxserver/radarr:nightly
     container_name: radarr
     volumes:
         - ./radarr/config:/config
@@ -322,11 +282,8 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/radarr"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://radarr:7878"
   lidarr:
-    image: "hotio/lidarr:nightly"
+    image: linuxserver/lidarr:nightly
     container_name: lidarr
     volumes:
         - ./lidarr/config:/config
@@ -343,11 +300,9 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/lidarr"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://lidarr:8686"
+
   readarr:
-    image: "hotio/readarr:nightly"
+    image: linuxserver/readarr:nightly
     container_name: readarr
     volumes:
         - ./readarr/config:/config
@@ -364,46 +319,24 @@ services:
       - jackett
       - prowlarr
       - qbittorrent
-    labels:
-      - "bunkerized-nginx.REVERSE_PROXY_URL=/readarr"
-      - "bunkerized-nginx.REVERSE_PROXY_HOST=http://readarr:8787"
-  bunkerized-nginx:
-    image: "bunkerity/bunkerized-nginx"
-    container_name: bunkerized-nginx
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges
-    read_only: true
-    tmpfs:
-      - /tmp
-    volumes:
-        - ./nginx/certificates:/etc/letsencrypt
-        - ./server-confs:/server-confs:ro         
-        - ./modsec-crs-confs:/modsec-crs-confs:ro 
-        - ./modsec-confs:/modsec-confs:ro         
+  swag:
+    image: ghcr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
     env_file: .env
     environment:
-        - SERVER_NAME=${MY_DDNS_DOMAIN}
-        - DISABLE_DEFAULT_SERVER=yes
-        - AUTO_LETS_ENCRYPT=yes
-        - REDIRECT_HTTP_TO_HTTPS=yes
-        - MAX_CLIENT_SIZE=0
-        - USE_REVERSE_PROXY=yes
-        - SERVE_FILES=no
-        - ALLOWED_METHODS=GET|POST|HEAD|PROPFIND|DELETE|PUT|MKCOL|MOVE|COPY|PROPPATCH|REPORT
-        - USE_BROTLI=yes
-        - USE_GZIP=yes
-        - X_FRAME_OPTIONS=SAMEORIGIN
-        - REFERRER_POLICY=same-origin
-        - PROXY_REAL_IP=yes
-        - FAIL2BAN_STATUS_CODE=400|401|403|405|444
-        - USE_CLAMAV_SCAN=no
-    labels:
-      - "bunkerized-nginx.AUTOCONF"
+
+      - URL=
+      - SUBDOMAINS=wildcard
+      - VALIDATION=duckdns
+      - DUCKDNSTOKEN=
+      - EMAIL=
+    volumes:
+      - ./swag/config:/config
     ports:
-        - "80:8080"
-        - "443:8443"
+      - 443:443
+      - 80:80
     networks:
         - frontend
         - backend      
@@ -422,15 +355,7 @@ services:
       - wireguard
       - netdata
       - portainer
-  myautoconf:
-    image: bunkerity/bunkerized-nginx-autoconf
-    restart: always
-    volumes_from:
-      - bunkerized-nginx
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    depends_on:
-      - bunkerized-nginx
+
 
 networks:
     frontend:
