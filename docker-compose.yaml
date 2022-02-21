@@ -247,7 +247,7 @@ services:
       - wireguard
       - postgres
   sonarr:
-    image: linuxserver/sonarr:nightly
+    image: linuxserver/sonarr:develop
     container_name: sonarr
     volumes:
         - ./sonarr/config:/config
