@@ -399,6 +399,14 @@ secrets:
     file: ./secrets/MY_DDNS_DOMAIN
   PIHOLE_WEBPASSWORD:
     file: ./secrets/PIHOLE_WEBPASSWORD
+  POSTGRES_PROWLARR_USER:
+    file: ./secrets/POSTGRES_PROWLARR_USER
+  POSTGRES_PROWLARR_PASSWORD:
+    file: ./secrets/POSTGRES_PROWLARR_PASSWORD
+  POSTGRES_PROWLARR_DB_MAIN:
+    file: ./secrets/POSTGRES_PROWLARR_DB_MAIN
+  POSTGRES_PROWLARR_DB_LOG:
+    file: ./secrets/POSTGRES_PROWLARR_DB_LOG
 
 networks:
     frontend:
