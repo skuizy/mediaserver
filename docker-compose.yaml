@@ -21,7 +21,7 @@ services:
       - DNS_FQDN_REQUIRED=true
       - DNS_BOGUS_PRIV=true
       - DNSSEC=true
-      - VIRTUAL_HOST=https://pihole.$$(cat /run/secrets/MY_DDNS_DOMAIN)
+      - VIRTUAL_HOST=https://pihole.$$(cat /run/secrets/MY_DDNS_DOMAIN).duckdns.org
       - REV_SERVER=true
       - REV_SERVER_CIDR=192.168.0.0/24
       - REV_SERVER_TARGET=192.168.0.1
@@ -103,7 +103,7 @@ services:
     environment:
         - APACHE_DISABLE_REWRITE_IP=1
         - TRUSTED_PROXIES=swag
-        - NEXTCLOUD_TRUSTED_DOMAINS=https://nextcloud.$$(cat /run/secrets/MY_DDNS_DOMAIN)
+        - NEXTCLOUD_TRUSTED_DOMAINS=https://nextcloud.$$(cat /run/secrets/MY_DDNS_DOMAIN).duckdns.org
         - NEXTCLOUD_DATA_DIR=/var/www/html/data
         - NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/NEXTCLOUD_ADMIN_USER
         - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/NEXTCLOUD_ADMIN_PASSWORD
@@ -350,7 +350,7 @@ services:
       - NET_ADMIN
     env_file: .env
     environment:
-      - FILE__URL=/run/secrets/MY_DDNS_DOMAIN
+      - URL=$$(cat /run/secrets/MY_DDNS_DOMAIN).duckdns.org
       - SUBDOMAINS=wildcard
       - VALIDATION=duckdns
       - FILE__DUCKDNSTOKEN=/run/secrets/DUCKDNS_TOKEN
