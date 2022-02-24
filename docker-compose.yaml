@@ -86,6 +86,13 @@ services:
     secrets:
       - POSTGRES_PASSWORD
       - POSTGRES_USER
+      - POSTGRES_NC_USER
+      - POSTGRES_NC_PASSWORD
+      - POSTGRES_NC_DB
+      - POSTGRES_PROWLARR_USER
+      - POSTGRES_PROWLARR_PASSWORD
+      - POSTGRES_PROWLARR_DB_MAIN
+      - POSTGRES_PROWLARR_DB_LOG
     networks:
       - backend
   nextcloud:
