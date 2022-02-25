@@ -350,7 +350,7 @@ services:
       - NET_ADMIN
     env_file: .env
     environment:
-      - URL=$$(cat /run/secrets/MY_DDNS_DOMAIN)
+      - FILE__URL=/run/secrets/MY_DDNS_DOMAIN
       - SUBDOMAINS=wildcard
       - VALIDATION=duckdns
       - FILE__DUCKDNSTOKEN=/run/secrets/DUCKDNS_TOKEN
