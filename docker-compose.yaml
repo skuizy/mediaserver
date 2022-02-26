@@ -21,7 +21,7 @@ services:
       - DNS_FQDN_REQUIRED=true
       - DNS_BOGUS_PRIV=true
       - DNSSEC=true
-      - VIRTUAL_HOST=https://pihole.
+      - VIRTUAL_HOST=https://pihole.<SUBDOMAIN>.duckdns.org
       - REV_SERVER=true
       - REV_SERVER_CIDR=192.168.0.0/24
       - REV_SERVER_TARGET=192.168.0.1
