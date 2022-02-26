@@ -12,5 +12,8 @@ mv ./swag/config/nginx/proxy-confs/radarr.subdomain.conf.sample ./swag/config/ng
 mv ./swag/config/nginx/proxy-confs/readarr.subdomain.conf.sample ./swag/config/nginx/proxy-confs/readarr.subdomain.conf
 mv ./swag/config/nginx/proxy-confs/sonarr.subdomain.conf.sample ./swag/config/nginx/proxy-confs/sonarr.subdomain.conf
 
+sed -i 's/upstream_proto https;/upstream_proto http;/g' swag/config/nginx/proxy-confs/nextcloud.subdomain.conf
+sed -i 's/upstream_port 443;/upstream_port 80;/g' swag/config/nginx/proxy-confs/nextcloud.subdomain.conf
+
 docker-compose restart swag
 docker exec -u 33 -it nextcloud ./occ app:enable files_external
