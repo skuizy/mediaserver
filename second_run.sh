@@ -11,3 +11,5 @@ mv ./swag/config/nginx/proxy-confs/qbittorrent.subdomain.conf.sample ./swag/conf
 mv ./swag/config/nginx/proxy-confs/radarr.subdomain.conf.sample ./swag/config/nginx/proxy-confs/radarr.subdomain.conf
 mv ./swag/config/nginx/proxy-confs/readarr.subdomain.conf.sample ./swag/config/nginx/proxy-confs/readarr.subdomain.conf
 mv ./swag/config/nginx/proxy-confs/sonarr.subdomain.conf.sample ./swag/config/nginx/proxy-confs/sonarr.subdomain.conf
+
+docker-compose restart swag
