@@ -238,7 +238,7 @@ services:
       - PGID=33
       - UMASK_SET=002
     volumes:
-      - ./qbitorrent/config:/config
+      - ./qbittorrent/config:/config
       - /media/DATA:/data
     network_mode: "service:wireguard"
     depends_on:
