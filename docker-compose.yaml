@@ -4,8 +4,8 @@ services:
     container_name: unbound
     image: klutchell/unbound:latest
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
+      - "53:5053/tcp"
+      - "53:5053/udp"
     restart: always
     networks:
       backend:
@@ -17,7 +17,7 @@ services:
     env_file: .env
     environment:
       - WEBPASSWORD_FILE=/run/secrets/PIHOLE_WEBPASSWORD
-      - 'PIHOLE_DNS_=127.0.0.1#5053;127.0.0.1#5053'
+      - PIHOLE_DNS_=127.0.0.1
       - DNS_FQDN_REQUIRED=true
       - DNS_BOGUS_PRIV=true
       - DNSSEC=true
