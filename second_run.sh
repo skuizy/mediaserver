@@ -13,3 +13,4 @@ mv ./swag/config/nginx/proxy-confs/readarr.subdomain.conf.sample ./swag/config/n
 mv ./swag/config/nginx/proxy-confs/sonarr.subdomain.conf.sample ./swag/config/nginx/proxy-confs/sonarr.subdomain.conf
 
 docker-compose restart swag
+docker exec -u 33 -it nextcloud ./occ app:enable files_external
