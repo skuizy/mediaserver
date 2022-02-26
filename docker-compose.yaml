@@ -102,7 +102,7 @@ services:
     environment:
         - APACHE_DISABLE_REWRITE_IP=1
         - TRUSTED_PROXIES=swag
-        - OVERWRITEHOST_FILE=/run/secrets/MY_DDNS_DOMAIN
+        - OVERWRITEHOST=nextcloud.<SUBDOMAIN>.duckdns.org
         - OVERWITEPROTOCOL=https
         - NEXTCLOUD_TRUSTED_DOMAINS=https://nextcloud.<SUBDOMAIN>.duckdns.org
         - NEXTCLOUD_DATA_DIR=/var/www/html/data
