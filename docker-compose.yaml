@@ -21,7 +21,7 @@ services:
       - DNS_FQDN_REQUIRED=true
       - DNS_BOGUS_PRIV=true
       - DNSSEC=true
-      - VIRTUAL_HOST=https://pihole.$$(cat /run/secrets/MY_DDNS_DOMAIN)
+      - VIRTUAL_HOST=https://pihole.
       - REV_SERVER=true
       - REV_SERVER_CIDR=192.168.0.0/24
       - REV_SERVER_TARGET=192.168.0.1
@@ -40,7 +40,6 @@ services:
       - unbound
     secrets:
       - PIHOLE_WEBPASSWORD
-      - MY_DDNS_DOMAIN
   duckdns:
     image: linuxserver/duckdns
     container_name: duckdns
