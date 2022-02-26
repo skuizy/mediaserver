@@ -17,3 +17,4 @@ sed -i 's/upstream_port 443;/upstream_port 80;/g' swag/config/nginx/proxy-confs/
 
 docker-compose restart swag
 docker exec -u 33 -it nextcloud ./occ app:enable files_external
+docker exec -u 33 -it nextcloud ./occ files_external:create /media local null::null
