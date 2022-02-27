@@ -1,5 +1,6 @@
 #!/bin/sh
 
+mv ./swag/config/nginx/proxy-confs/calibre.subdomain.conf.sample ./swag/config/nginx/proxy-confs/calibre.subdomain.conf
 mv ./swag/config/nginx/proxy-confs/jackett.subdomain.conf.sample ./swag/config/nginx/proxy-confs/jackett.subdomain.conf
 mv ./swag/config/nginx/proxy-confs/jellyfin.subdomain.conf.sample ./swag/config/nginx/proxy-confs/jellyfin.subdomain.conf
 mv ./swag/config/nginx/proxy-confs/lidarr.subdomain.conf.sample ./swag/config/nginx/proxy-confs/lidarr.subdomain.conf
